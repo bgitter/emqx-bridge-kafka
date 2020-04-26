@@ -1,0 +1,21 @@
+{application, emqx_bridge_kafka,
+  [{description, "EMQ X Bridge to Kafka"},
+    {vsn, "git"},
+    {modules, [emqx_bridge_kafka,
+      emqx_bridge_kafka_actions,
+      emqx_bridge_kafka_app,
+      emqx_bridge_kafka_cli,
+      emqx_bridge_kafka_sup]},
+    {registered, [emqx_bridge_kafka_sup]},
+    {mod, {emqx_bridge_kafka_app, []}},
+    {applications,
+      [kernel,
+        stdlib,
+        wolff,
+        erlavro,
+        jsx
+      ]},
+    {env, []},
+    {licenses, ["Apache 2.0"]},
+    {links, []}
+  ]}.
