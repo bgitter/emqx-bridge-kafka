@@ -66,26 +66,6 @@
       en => <<"Max Batch Bytes">>,
       zh => <<"最大批处理字节数">>
     }
-  },
-  compression => #{
-    order => 5,
-    type => string,
-    required => false,
-    default => <<"no_compression">>,
-    enum => [<<"no_compression">>, <<"snappy">>, <<"gzip">>],
-    title => #{en => <<"Compression">>, zh => <<"压缩">>},
-    description => #{en => <<"Compression">>, zh => <<"压缩">>}
-  },
-  send_buffer => #{
-    order => 6,
-    type => string,
-    required => false,
-    default => <<"1024KB">>,
-    title => #{en => <<"Socket Send Buffer">>, zh => <<"发送消息的缓冲区大小">>},
-    description => #{
-      en => <<"Socket Send Buffer">>,
-      zh => <<"发送消息的缓冲区大小">>
-    }
   }
 }).
 
