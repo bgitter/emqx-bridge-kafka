@@ -145,7 +145,6 @@
       zh => <<"Produce 策略">>
     }
   }
-
 }).
 
 -resource_type(#{
