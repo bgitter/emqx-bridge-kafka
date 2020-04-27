@@ -17,6 +17,7 @@
 -export([start/2, stop/1, prep_stop/1]).
 
 start(_StartType, _StartArgs) ->
+  ?LOG(warning, "start..."),
   {ok, _AppNames} = application:ensure_all_started(wolff),
   Servers = application:get_env(emqx_bridge_kafka, servers, "127.0.0.1:9092"),
   ConnStrategy = application:get_env(emqx_bridge_kafka, connection_strategy, per_partition),
