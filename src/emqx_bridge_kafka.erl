@@ -12,6 +12,7 @@
 
 %% 对外接口
 register_metrics() ->
+  ?LOG(warning, "register metrics..."),
   [emqx_metrics:new(MetricName) || MetricName <- [
     'bridge.kafka.client_connected',
     'bridge.kafka.client_disconnected',
@@ -24,8 +25,8 @@ register_metrics() ->
 
 load(ClientId) ->
   ?LOG(warning, "load..."),
-  HookList = application:get_env(emqx_bridge_kafka, hooks, []),
-  ?LOG(warning, "HookList: ~p ", [HookList]),
+  HookList = parse_hook(application:get_env(emqx_bridge_kafka, hooks, [])),
+  ?LOG(warning, "parse hook after: ~p ", [HookList]),
   ReplayDir = application:get_env(emqx_bridge_kafka, replayq_dir, false),
   ProducerCfg = application:get_env(emqx_bridge_kafka, producer, []),
   NProducers = lists:foldl(
@@ -219,10 +220,13 @@ gen_encoder('message.delivered', _Format) ->
   {ok, SchemaJSON} = file:read_file(code:priv_dir(emqx_bridge_kafka) ++ "/receive.avsc"),
   avro:make_simple_encoder(jsx:format(SchemaJSON), []).
 
-parse_hook(Hooks) -> parse_hook(Hooks, [], 0).
+parse_hook(Hooks) ->
+  ?LOG(warning, "parse hook pre: ~p ", [Hooks]),
+  parse_hook(Hooks, [], 0).
 
 parse_hook([], Acc, _Seq) -> Acc;
 parse_hook([{Hook, Item} | Hooks], Acc, Seq) ->
+  ?LOG(warning, "Hook: ~p, Item: ~p", [Hook, Item]),
   Params = emqx_json:decode(Item),
   Topic = get_value(<<"topic">>, Params),
   Filter = get_value(<<"filter">>, Params),

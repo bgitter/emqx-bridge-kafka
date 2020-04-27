@@ -30,6 +30,7 @@ start(_StartType, _StartArgs) ->
   ClientId = <<"emqx_bridge_kafka">>,
   ?LOG(warning, "start... Servers: ~p, ConnStrategy: ~p, SockOpts: ~p, ClientCfg: ~p", [Servers, ConnStrategy, SockOpts, ClientCfg]),
   {ok, _ClientPid} = wolff:ensure_supervised_client(ClientId, Servers, ClientCfg),
+  ?LOG(warning, "wolff supervised client started..."),
   {ok, Sup} = emqx_bridge_kafka_sup:start_link(),
   %% register metrics
   emqx_bridge_kafka:register_metrics(),
