@@ -24,7 +24,7 @@
 ]}.
 
 {mapping, "bridge.kafka.produce.sync_timeout", "emqx_bridge_kafka.produce_sync_timeout", [
-  {datatype, {duration, msg}}
+  {datatype, {duration, ms}}
 ]}.
 
 {mapping, "bridge.kafka.replayq_dir", "emqx_bridge_kafka.replayq_dir", [
