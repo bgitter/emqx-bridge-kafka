@@ -12,7 +12,7 @@ CONFIG1 = case os:getenv("TRAVIS") of
 
 CUR_BRANCH = os:cmd("git branch | grep -e '^*' | cut -d' ' -f 2") -- "\n",
 
-io:format("===> CUR_BRANCH: ~p~n", [CUR_BRANCH]).
+io:format("===> bridge Kafka CUR_BRANCH: ~p~n", [CUR_BRANCH]).
 
 MATCH_BRANCH = fun (BranchName) when BranchName =:= "master";
                                      BranchName =:= "develop" ->
@@ -26,7 +26,7 @@ MATCH_BRANCH = fun (BranchName) when BranchName =:= "master";
 
 BRANCH = MATCH_BRANCH(CUR_BRANCH),
 
-io:format("===> BRANCH: ~p~n", [BRANCH]).
+io:format("===> bridge Kafka BRANCH: ~p~n", [BRANCH]).
 
 DEPS = case lists:keyfind(deps, 1, CONFIG1) of
            {_, Deps} -> Deps;

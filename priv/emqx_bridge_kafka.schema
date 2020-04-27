@@ -79,8 +79,8 @@ end}.
           {required_acks,     cuttlefish:conf_get("bridge.kafka.producer.required_acks", Conf, undefined)},
           {ack_timeout,       cuttlefish:conf_get("bridge.kafka.producer.ack_timeout", Conf, undefined)},
           {max_batch_bytes,   cuttlefish:conf_get("bridge.kafka.producer.max_batch_bytes", Conf, undefined)},
-          {min_batch_bytes    cuttlefish:conf_get("bridge.kafka.producer.min_batch_bytes", Conf, undefined)},
-          {max_send_ahead     cuttlefish:conf_get("bridge.kafka.producer.max_send_ahead", Conf, undefined)},
+          {min_batch_bytes,   cuttlefish:conf_get("bridge.kafka.producer.min_batch_bytes", Conf, undefined)},
+          {max_send_ahead,    cuttlefish:conf_get("bridge.kafka.producer.max_send_ahead", Conf, undefined)},
           {compression,       cuttlefish:conf_get("bridge.kafka.producer.compression", Conf, undefined)}])
 end}.
 
@@ -114,8 +114,7 @@ end}.
 
 {translation, "emqx_bridge_kafka.hooks", fun(Conf) ->
   Hooks = cuttlefish_variable:filter_by_prefix("bridge.kafka.hook", Conf),
-  lists.map(fun({[_, _, _, Name1, Name2, _], Val}) ->
-    io:format('Name1: ~p, Name2: ~p, Val: ~p', [Name1, Name2, Val]),
+  lists:map(fun({[_, _, _, Name1, Name2, _], Val}) ->
     {lists:concat([Name1, ".", Name2]), list_to_binary(Val)}
   end, Hooks)
 end}.
