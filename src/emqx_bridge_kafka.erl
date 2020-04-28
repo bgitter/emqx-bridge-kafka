@@ -68,7 +68,7 @@ unload() ->
 load_(Hook, Params) ->
   case Hook of
     'client.connected' ->
-      emqx:hook(Hook, fun emqx_bridge_kafka:on_client_connect/3, [Params]);
+      emqx:hook(Hook, fun emqx_bridge_kafka:on_client_connected/3, [Params]);
     'client.disconnected' ->
       emqx:hook(Hook, fun emqx_bridge_kafka:on_client_disconnected/4, [Params]);
     'session.subscribed' ->
