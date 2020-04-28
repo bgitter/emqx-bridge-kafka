@@ -10,6 +10,11 @@
 
 -export([register_metrics/0, load/1, unload/0]).
 
+-export([on_client_connected/3, on_client_disconnected/4,
+  on_session_subscribed/4, on_session_unsubscribed/4,
+  on_message_publish/2, on_message_acked/3, on_message_delivered/3
+]).
+
 %% 对外接口
 register_metrics() ->
   ?LOG(info, "register metrics..."),
