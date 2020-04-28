@@ -49,8 +49,7 @@ load(ClientId) ->
           ?LOG(error, "Start topic:~p producers fail, error:~p", [Topic, Error]),
           wolff:stop_and_delete_supervised_producers(#{client => ClientId, topic => Topic}),
           Acc
-      end,
-      ok
+      end
     end, [], HookList),
   ?LOG(info, "~s is loaded.", [emqx_bridge_kafka]),
   {ok, NProducers}.
