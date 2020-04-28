@@ -279,6 +279,7 @@ feed_key(Key, {_ClientId, _Username, Topic}) ->
   end.
 
 msg_to_kafka(Producers, {Key, JsonMsg}) ->
+  ?LOG(info, "msg to kafka...~n Producers: ~p~n Key: ~p~n JsonMsg: ~p", [Producers, Key, JsonMsg]),
   try
     produce(Producers, Key, JsonMsg)
   catch
@@ -293,12 +294,14 @@ binary_header(Cnt, Binary) ->
 produce(Producers, Key, JsonMsg) when is_list(JsonMsg) ->
   produce(Producers, Key, iolist_to_binary(JsonMsg));
 produce(Producers, Key, JsonMsg) ->
-  ?LOG(info, "Produce key:~p, payload:~p", [Key, JsonMsg]),
+  ?LOG(info, "produce...~n Key:~p, JsonMsg:~p", [Key, JsonMsg]),
   case application:get_env(emqx_bridge_kafka, produce, sync) of
     sync ->
+      ?LOG(info, "produce sync..."),
       Timeout = application:get_env(emqx_bridge_kafka, produce_sync_timeout, 3000),
       wolff:send_sync(Producers, [#{key => Key, value => JsonMsg}], Timeout);
     async ->
+      ?LOG(info, "produce async..."),
       wolff:send(Producers, [#{key => Key, value => JsonMsg}], fun emqx_bridge_kafka:wolff_callback/2)
   end.
 
