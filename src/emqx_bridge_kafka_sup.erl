@@ -16,7 +16,7 @@
 -export([init/1]).
 
 start_link() ->
-  ?LOG(warning, "start link..."),
+  ?LOG(info, "start link..."),
   supervisor:start_link({local, emqx_bridge_kafka_sup}, emqx_bridge_kafka_sup, []).
 
 %% sup_flags() = #{strategy => strategy(),         % optional
@@ -29,7 +29,7 @@ start_link() ->
 %%                  type => worker(),       % optional
 %%                  modules => modules()}   % optional
 init([]) ->
-  ?LOG(warning, "init..."),
+  ?LOG(info, "init..."),
   SupFlags = #{strategy => one_for_one,
     intensity => 10,
     period => 100},

@@ -12,7 +12,7 @@
 
 %% 对外接口
 register_metrics() ->
-  ?LOG(warning, "register metrics..."),
+  ?LOG(info, "register metrics..."),
   [emqx_metrics:new(MetricName) || MetricName <- [
     'bridge.kafka.client_connected',
     'bridge.kafka.client_disconnected',
@@ -24,14 +24,14 @@ register_metrics() ->
   ]].
 
 load(ClientId) ->
-  ?LOG(warning, "load..."),
+  ?LOG(info, "load..."),
   HookList = parse_hook(application:get_env(emqx_bridge_kafka, hooks, [])),
-  ?LOG(warning, "parse hook after: ~p ", [HookList]),
+  ?LOG(info, "parse hook after: ~p ", [HookList]),
   ReplayDir = application:get_env(emqx_bridge_kafka, replayq_dir, false),
   ProducerCfg = application:get_env(emqx_bridge_kafka, producer, []),
   NProducers = lists:foldl(
     fun({Hook, Filter, Key, Topic, Strategy, Seq, MessageFormat, PayloadFormat}, Acc) ->
-      ?LOG(warning, "Hook: ~p, Filter: ~p, Key: ~p, Topic: ~p, Strategy: ~p, Seq: ~p, MessageFormat: ~p, PayloadFormat: ~p",
+      ?LOG(info, "Hook: ~p, Filter: ~p, Key: ~p, Topic: ~p, Strategy: ~p, Seq: ~p, MessageFormat: ~p, PayloadFormat: ~p",
         [Hook, Filter, Key, Topic, Strategy, Seq, MessageFormat, PayloadFormat]),
       SchemaEncoder = gen_encoder(Hook, MessageFormat),
       NReplayDir = case ReplayDir of
@@ -52,17 +52,17 @@ load(ClientId) ->
       end,
       ok
     end, [], HookList),
-  ?LOG(warning, "~s is loaded.", [emqx_bridge_kafka]),
+  ?LOG(info, "~s is loaded.", [emqx_bridge_kafka]),
   {ok, NProducers}.
 
 unload() ->
   HookList = parse_hook(application:get_env(emqx_bridge_kafka, hooks, [])),
-  ?LOG(warning, "HookList: ~p", [HookList]),
+  ?LOG(info, "HookList: ~p", [HookList]),
   lists:foreach(
     fun({Hook, _, _, _, _, _, _, _}) ->
       unload_(Hook)
     end, HookList),
-  ?LOG(warning, "~s is unloaded.", [emqx_bridge_kafka]),
+  ?LOG(info, "~s is unloaded.", [emqx_bridge_kafka]),
   ok.
 
 %% 内部接口
@@ -103,7 +103,7 @@ unload_(Hook) ->
   end.
 
 on_client_connected(ClientInfo, _ConnInfo, {_, Producers, Key, SchemaEncoder, _}) ->
-  ?LOG(warning, "client connected... ClientInfo: ~p", [ClientInfo]),
+  ?LOG(info, "client connected... ClientInfo: ~p", [ClientInfo]),
   emqx_metrics:inc('bridge.kafka.client_connected'),
   ClientId = maps:get(clientid, ClientInfo, undefined),
   Username = maps:get(username, ClientInfo, undefined),
@@ -113,11 +113,11 @@ on_client_connected(ClientInfo, _ConnInfo, {_, Producers, Key, SchemaEncoder, _}
 
 on_client_disconnected(ClientInfo, {shutdown, Reason}, ConnInfo, Rule)
   when is_atom(Reason); is_integer(Reason) ->
-  ?LOG(warning, "client disconnected... ClientInfo: ~p, Reason: ~p", [ClientInfo, Reason]),
+  ?LOG(info, "client disconnected... ClientInfo: ~p, Reason: ~p", [ClientInfo, Reason]),
   on_client_disconnected(ClientInfo, Reason, ConnInfo, Rule);
 on_client_disconnected(ClientInfo, Reason, _ConnInfo, {_, Producers, Key, SchemaEncoder, _})
   when is_atom(Reason); is_integer(Reason) ->
-  ?LOG(warning, "client disconnected... ClientInfo: ~p, Reason: ~p", [ClientInfo, Reason]),
+  ?LOG(info, "client disconnected... ClientInfo: ~p, Reason: ~p", [ClientInfo, Reason]),
   emqx_metrics:inc('bridge.kafka.client_disconnected'),
   ClientId = maps:get(clientid, ClientInfo, undefined),
   Username = maps:get(username, ClientInfo, undefined),
@@ -126,11 +126,11 @@ on_client_disconnected(ClientInfo, Reason, _ConnInfo, {_, Producers, Key, Schema
   msg_to_kafka(Producers, {feed_key(Key, {ClientId, Username}), data_format(Data, SchemaEncoder)}),
   ok;
 on_client_disconnected(_ClientInfo, Reason, _ConnInfo, _Envs) ->
-  ?LOG(warning, "Client disconnected reason:~p not encode json", [Reason]),
+  ?LOG(info, "Client disconnected reason:~p not encode json", [Reason]),
   ok.
 
 on_session_subscribed(ClientInfo, Topic, Opts, {Filter, Producers, Key, SchemaEncoder, _}) ->
-  ?LOG(warning, "session subscribed... ClientInfo: ~p, Topic: ~p", [ClientInfo, Topic]),
+  ?LOG(info, "session subscribed... ClientInfo: ~p, Topic: ~p", [ClientInfo, Topic]),
   case emqx_topic:match(Topic, Filter) of
     true ->
       ClientId = maps:get(clientid, ClientInfo, undefined),
@@ -221,12 +221,12 @@ gen_encoder('message.delivered', _Format) ->
   avro:make_simple_encoder(jsx:format(SchemaJSON), []).
 
 parse_hook(Hooks) ->
-  ?LOG(warning, "parse hook pre: ~p ", [Hooks]),
+  ?LOG(info, "parse hook pre: ~p ", [Hooks]),
   parse_hook(Hooks, [], 0).
 
 parse_hook([], Acc, _Seq) -> Acc;
 parse_hook([{Hook, Item} | Hooks], Acc, Seq) ->
-  ?LOG(warning, "Hook: ~p, Item: ~p", [Hook, Item]),
+  ?LOG(info, "Hook: ~p, Item: ~p", [Hook, Item]),
   Params = emqx_json:decode(Item),
   Topic = get_value(<<"topic">>, Params),
   Filter = get_value(<<"filter">>, Params),
@@ -289,7 +289,7 @@ binary_header(Cnt, Binary) ->
 produce(Producers, Key, JsonMsg) when is_list(JsonMsg) ->
   produce(Producers, Key, iolist_to_binary(JsonMsg));
 produce(Producers, Key, JsonMsg) ->
-  ?LOG(warning, "Produce key:~p, payload:~p", [Key, JsonMsg]),
+  ?LOG(info, "Produce key:~p, payload:~p", [Key, JsonMsg]),
   case application:get_env(emqx_bridge_kafka, produce, sync) of
     sync ->
       Timeout = application:get_env(emqx_bridge_kafka, produce_sync_timeout, 3000),
@@ -299,7 +299,7 @@ produce(Producers, Key, JsonMsg) ->
   end.
 
 wolff_callback(_Partition, _BaseOffset) ->
-  ?LOG(warning, "wolff_callback... _Partition: ~p, _BaseOffset: ~p", [_Partition, _BaseOffset]),
+  ?LOG(info, "wolff_callback... _Partition: ~p, _BaseOffset: ~p", [_Partition, _BaseOffset]),
   ok.
 
 format_sub_json(ClientId, Topic, Opts) ->

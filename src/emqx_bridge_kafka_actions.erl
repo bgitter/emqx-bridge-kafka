@@ -171,7 +171,7 @@
 
 %% 外部接口
 on_resource_create(ResId, Config = #{<<"servers">> := Servers}) ->
-  ?LOG(warning, "on_resource_create... ResId: ~p, Config: ~p", [ResId, Config]),
+  ?LOG(info, "on_resource_create... ResId: ~p, Config: ~p", [ResId, Config]),
   {ok, _} = application:ensure_all_started(wolff),
   Interval = cuttlefish_duration:parse(str(maps:get(<<"min_metadata_refresh_interval">>, Config))),
   Timeout = cuttlefish_duration:parse(str(maps:get(<<"sync_timeout">>, Config))),
@@ -196,20 +196,20 @@ on_resource_create(ResId, Config = #{<<"servers">> := Servers}) ->
   }.
 
 on_resource_status(_ResId, #{<<"servers">> := Servers}) ->
-  ?LOG(warning, "on_resource_status... ResId: ~p, Servers: ~p", [_ResId, Servers]),
+  ?LOG(info, "on_resource_status... ResId: ~p, Servers: ~p", [_ResId, Servers]),
   case ensure_server_list(Servers) of
     ok -> #{is_alive => true};
     {error, _} -> #{is_alive => false}
   end.
 
 on_resource_destroy(ResId, #{<<"client_id">> := ClientId}) ->
-  ?LOG(warning, "on_resource_destroy... Destroying Resource: ~p, ResId: ~p", [bridge_kafka, ResId]),
+  ?LOG(info, "on_resource_destroy... Destroying Resource: ~p, ResId: ~p", [bridge_kafka, ResId]),
   ok = wolff:stop_and_delete_supervised_client(ClientId).
 
 on_action_create_data_to_kafka(Id, Params = #{
   <<"client_id">> := ClientId, <<"strategy">> := Strategy,
   <<"type">> := Type, <<"topic">> := Topic, <<"timeout">> := Timeout}) ->
-  ?LOG(warning, "on_action_create_data_to_kafka... Id: ~p, Params: ~p", [Id, Params]),
+  ?LOG(info, "on_action_create_data_to_kafka... Id: ~p, Params: ~p", [Id, Params]),
   ReplayqDir = application:get_env(emqx_bridge_kafka, replayq_dir, false),
   Key = maps:get(<<"key">>, Params),
   NewReplayqDir =
@@ -314,7 +314,7 @@ check_kafka_topic(ClientId, Topic) ->
   end.
 
 produce(Producers, Key, JsonMsg, Type, Timeout) ->
-  ?LOG(warning, "Produce key:~p, payload:~p", [Key, JsonMsg]),
+  ?LOG(info, "Produce key:~p, payload:~p", [Key, JsonMsg]),
   case Type of
     <<"sync">> -> wolff:send_sync(Producers, [#{key => Key, value => JsonMsg}], Timeout);
     <<"async">> ->

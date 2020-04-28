@@ -17,7 +17,7 @@
 -export([start/2, stop/1, prep_stop/1]).
 
 start(_StartType, _StartArgs) ->
-  ?LOG(warning, "start..."),
+  ?LOG(info, "start..."),
   {ok, _AppNames} = application:ensure_all_started(wolff),
   Servers = application:get_env(emqx_bridge_kafka, servers, "127.0.0.1:9092"),
   ConnStrategy = application:get_env(emqx_bridge_kafka, connection_strategy, per_partition),
@@ -28,9 +28,9 @@ start(_StartType, _StartArgs) ->
     min_metadata_refresh_interval => RefreshInterval
   },
   ClientId = <<"emqx_bridge_kafka">>,
-  ?LOG(warning, "start... Servers: ~p, ConnStrategy: ~p, SockOpts: ~p, ClientCfg: ~p", [Servers, ConnStrategy, SockOpts, ClientCfg]),
+  ?LOG(info, "start... Servers: ~p, ConnStrategy: ~p, SockOpts: ~p, ClientCfg: ~p", [Servers, ConnStrategy, SockOpts, ClientCfg]),
   {ok, _ClientPid} = wolff:ensure_supervised_client(ClientId, Servers, ClientCfg),
-  ?LOG(warning, "wolff supervised client started..."),
+  ?LOG(info, "wolff supervised client started..."),
   {ok, Sup} = emqx_bridge_kafka_sup:start_link(),
   %% register metrics
   emqx_bridge_kafka:register_metrics(),
@@ -38,21 +38,22 @@ start(_StartType, _StartArgs) ->
   %% load kafka
   case emqx_bridge_kafka:load(ClientId) of
     {ok, []} ->
-      ?LOG(warning, "Start emqx_bridge_kafka fail"),
+      ?LOG(info, "Start emqx_bridge_kafka fail"),
       wolff:stop_and_delete_supervised_client(ClientId);
     {ok, NProducers} ->
+      ?LOG(info, "Start emqx_bridge_kafka success...~n NProducers: ~p", [NProducers]),
       emqx_bridge_kafka_cli:load(),
       {ok, Sup, #{client_id => ClientId, n_producers => NProducers}}
   end.
 
 prep_stop(State) ->
-  ?LOG(warning, "prep_stop..."),
+  ?LOG(info, "prep_stop..."),
   emqx_bridge_kafka:unload(),
   emqx_bridge_kafka_cli:unload(),
   State.
 
 stop(#{client_id := ClientId, n_producers := NProducers}) ->
-  ?LOG(warning, "stop..."),
+  ?LOG(info, "stop..."),
   lists:foreach(
     fun(Producers) ->
       wolff:stop_and_delete_supervised_producers(Producers)

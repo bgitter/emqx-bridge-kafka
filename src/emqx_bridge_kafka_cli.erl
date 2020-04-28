@@ -17,7 +17,7 @@
 -export([load/0, unload/0, kafka_stats/1]).
 
 load() ->
-  ?LOG(warning, "load..."),
+  ?LOG(info, "load..."),
   emqx_ctl:register_command(kafka_stats, {emqx_bridge_kafka_cli, kafka_stats}, []).
 
 kafka_stats([]) ->
@@ -29,5 +29,5 @@ kafka_stats(_) ->
   [io:format("~-48s# ~s~n", [Cmd, Desc]) || {Cmd, Desc} <- [{"kafka_stats", "Bridge kafka message stats"}]].
 
 unload() ->
-  ?LOG(warning, "unload..."),
+  ?LOG(info, "unload..."),
   emqx_ctl:unregister_command(kafka_stats).
