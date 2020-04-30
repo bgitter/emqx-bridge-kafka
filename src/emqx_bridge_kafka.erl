@@ -48,6 +48,7 @@ load(ClientId) ->
 
       case wolff:ensure_supervised_producers(ClientId, Topic, maps:from_list(NProducerCfg)) of
         {ok, Producers} ->
+          ?LOG(info, "wolff ensure supervised producers success... Producers: ~p", [Producers]),
           load_(Hook, {Filter, Producers, Key, SchemaEncoder, PayloadFormat}),
           [Producers | Acc];
         {error, Error} ->
