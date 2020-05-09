@@ -28,7 +28,7 @@ start(_StartType, _StartArgs) ->
     min_metadata_refresh_interval => RefreshInterval
   },
   ClientId = <<"emqx_bridge_kafka">>,
-  ?LOG(info, "start... Servers: ~p, ConnStrategy: ~p, SockOpts: ~p, ClientCfg: ~p", [Servers, ConnStrategy, SockOpts, ClientCfg]),
+  ?LOG(info, "Servers: ~p~n ConnStrategy: ~p~n SockOpts: ~p~n ClientCfg: ~p", [Servers, ConnStrategy, SockOpts, ClientCfg]),
   {ok, _ClientPid} = wolff:ensure_supervised_client(ClientId, Servers, ClientCfg),
   ?LOG(info, "wolff supervised client started..."),
   {ok, Sup} = emqx_bridge_kafka_sup:start_link(),
