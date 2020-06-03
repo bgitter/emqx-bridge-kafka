@@ -48,7 +48,7 @@ load(ClientId) ->
   ?LOG(info, " consumer Topics: ~p~n CoordinatorCfg:~p~n Config:~p~n", [Topics, CoordinatorCfg, Config]),
   lists:foreach(
     fun({Name, Topic, MountPoint, GroupId, Seq}) ->
-      ?LOG("Name:~p~n Topic:~p~n MountPoint:~p~n GroupId:~p~n Seq:～p~n", [Name, Topic, MountPoint, GroupId, Seq]),
+      ?LOG(info, "Name:~p~n Topic:~p~n MountPoint:~p~n GroupId:~p~n Seq:～p~n", [Name, Topic, MountPoint, GroupId, Seq]),
       subscribe(ClientId, GroupId, Topic, Config, CoordinatorCfg, MountPoint)
     end, Topics),
   ok.
