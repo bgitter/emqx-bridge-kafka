@@ -120,7 +120,10 @@ mqtt_publish(SubscriberPid, Msg) ->
   {ok, MountPoint0} = gen_server:call(SubscriberPid, {call, mount_point}),
   MountPoint = case is_mount_point(MountPoint0) of
                  true -> MountPoint0;
-                 {false, Key} -> get_value(Key, emqx_json:decode(Msg))
+                 {false, Key} ->
+                   Json = emqx_json:decode(Msg),
+                   ?LOG(info, "Key: ~p Json: ~p~n", [Key, Json]),
+                   get_value(Key, Json)
                end,
   Message = emqx_message:make(MountPoint, Msg),
   ?LOG(info, "MountPoint:~p~n, Orig Msg:~p~n Message:~p~n", [MountPoint, Msg, Message]),
@@ -150,7 +153,7 @@ is_mount_point(B) ->
   case re:run(B, "^\\${(.*)}$", [{capture, [1], list}]) of
     {match, [Key]} ->
       ?LOG(info, "match! B:~p Key: ~p~n", [B, Key]),
-      {false, Key};
+      {false, list_to_binary(Key)};
     nomatch ->
       ?LOG(info, "nomatch! B:~p~n", [B]),
       true
