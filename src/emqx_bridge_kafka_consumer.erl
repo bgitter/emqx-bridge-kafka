@@ -79,7 +79,7 @@ handle_call(mount_point, _From, #callback_state{mount_point = MountPoint} = Stat
 %% 私有函数
 subscribe(ClientId, GroupId, Topic, ConsumerCfg, CoordinatorCfg, MountPoint) ->
   Topics = [Topic],
-  Config = [{consumer, ConsumerCfg}, {coordinator, CoordinatorCfg}],
+  Config = [{consumer, maps:from_list(ConsumerCfg)}, {coordinator, maps:from_list(CoordinatorCfg)}],
   wolff:start_link_group_subscriber(ClientId, GroupId, Topics,
     maps:from_list(Config), ?MESSAGE, ?MODULE, {ClientId, Topics, ?MESSAGE, MountPoint}).
 
