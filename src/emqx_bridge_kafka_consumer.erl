@@ -123,8 +123,9 @@ mqtt_publish(SubscriberPid, Msg) ->
                  {false, Key} -> get_value(emqx_json:decode(Msg), Key)
                end,
   Message = emqx_message:make(MountPoint, Msg),
+  ?LOG(info, "MountPoint:~p~n, Message:~p~n", [MountPoint, Message]),
   Result = emqx:publish(Message),
-  ?LOG(info, "mqtt_publish...~n Orig Msg:~p~n Message:~p~n MountPoint:~p~n publish Result:~p~n", [Msg, Message, MountPoint, Result]),
+  ?LOG(info, "mqtt_publish success...~n publish Result:~p~n", [Result]),
   ok.
 
 parse_topic(Topics) ->
@@ -148,7 +149,9 @@ get_value(B, Item) ->
 is_mount_point(B) ->
   case re:run(B, "^\\${(.*)}$", [{capture, [1], list}]) of
     {match, [Key]} ->
+      ?LOG(info, "match! B:~p Key: ~p~n", [B, Key]),
       {false, Key};
     nomatch ->
+      ?LOG(info, "nomatch! B:~p~n", [B]),
       true
   end.
