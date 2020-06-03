@@ -36,7 +36,7 @@ start(_StartType, _StartArgs) ->
   emqx_bridge_kafka:register_metrics(),
 
   ok = emqx_bridge_kafka_consumer:load(ClientId),
-
+  ?LOG(info, "emqx bridge kafka consumer registed"),
   %% load kafka
   case emqx_bridge_kafka:load(ClientId) of
     {ok, []} ->

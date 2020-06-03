@@ -79,7 +79,7 @@ handle_call(mount_point, _From, #callback_state{mount_point = MountPoint} = Stat
 %% 私有函数
 subscribe(ClientId, GroupId, Topic, ConsumerCfg, CoordinatorCfg, MountPoint) ->
   Topics = [Topic],
-  Config = [{consumer, ConsumerCfg}, {coordinator, CoordinatorCfg}],
+  Config = [{consumer, maps:from_list(ConsumerCfg)}, {coordinator, maps:from_list(CoordinatorCfg)}],
   wolff:start_link_group_subscriber(ClientId, GroupId, Topics,
     maps:from_list(Config), ?MESSAGE, ?MODULE, {ClientId, Topics, ?MESSAGE, MountPoint}).
 
@@ -87,6 +87,7 @@ spawn_message_handlers(_ClientId, []) -> [];
 spawn_message_handlers(ClientId, [Topic | Rest]) ->
   ?LOG(info, "spawn_message_handlers... ClientId:~p Topic:~p~n", [ClientId, Topic]),
   {ok, PartitionCount} = wolff:get_partitions_count(ClientId, Topic),
+  ?LOG(info, "PartitionCount: ~p~n", [PartitionCount]),
   [{{Topic, Partition}, spawn_link(?MODULE, message_handler_loop, [Topic, Partition, self()])}
     || Partition <- lists:seq(0, PartitionCount - 1)] ++ spawn_message_handlers(ClientId, Rest).
 
