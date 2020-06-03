@@ -150,17 +150,14 @@ end}.
 ]}.
 
 {mapping, "bridge.kafka.consumer.config.max_bytes", "emqx_bridge_kafka.consumer_config", [
-    {default, 1MB},
     {datatype, bytesize}
 ]}.
 
 {mapping, "bridge.kafka.consumer.config.max_wait_time", "emqx_bridge_kafka.consumer_config", [
-    {default, 10S},
     {datatype, {duration, ms}}
 ]}.
 
 {mapping, "bridge.kafka.consumer.config.sleep_timeout", "emqx_bridge_kafka.consumer_config", [
-    {default, 1S},
     {datatype, {duration, ms}}
 ]}.
 
@@ -170,7 +167,6 @@ end}.
 ]}.
 
 {mapping, "bridge.kafka.consumer.config.prefetch_bytes", "emqx_bridge_kafka.consumer_config", [
-    {default, 100KB},
     {datatype, bytesize}
 ]}.
 
