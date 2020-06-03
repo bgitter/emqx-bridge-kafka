@@ -120,10 +120,10 @@ mqtt_publish(SubscriberPid, Msg) ->
   {ok, MountPoint0} = gen_server:call(SubscriberPid, {call, mount_point}),
   MountPoint = case is_mount_point(MountPoint0) of
                  true -> MountPoint0;
-                 {false, Key} -> get_value(emqx_json:decode(Msg), Key)
+                 {false, Key} -> get_value(Key, emqx_json:decode(Msg))
                end,
   Message = emqx_message:make(MountPoint, Msg),
-  ?LOG(info, "MountPoint:~p~n, Message:~p~n", [MountPoint, Message]),
+  ?LOG(info, "MountPoint:~p~n, Orig Msg:~p~n Message:~p~n", [MountPoint, Msg, Message]),
   Result = emqx:publish(Message),
   ?LOG(info, "mqtt_publish success...~n publish Result:~p~n", [Result]),
   ok.
