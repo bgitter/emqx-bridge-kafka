@@ -142,3 +142,131 @@ end}.
           {sndbuf,       cuttlefish:conf_get("bridge.kafka.sock.sndbuf", Conf, undefined)},
           {read_packets, cuttlefish:conf_get("bridge.kafka.sock.read_packets", Conf, undefined)}])
 end}.
+
+
+{mapping, "bridge.kafka.consumer.config.min_bytes", "emqx_bridge_kafka.consumer_config", [
+    {default, 0},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.max_bytes", "emqx_bridge_kafka.consumer_config", [
+    {default, 1MB},
+    {datatype, bytesize}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.max_wait_time", "emqx_bridge_kafka.consumer_config", [
+    {default, 10S},
+    {datatype, {duration, ms}}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.sleep_timeout", "emqx_bridge_kafka.consumer_config", [
+    {default, 1S},
+    {datatype, {duration, ms}}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.prefetch_count", "emqx_bridge_kafka.consumer_config", [
+    {default, 10},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.prefetch_bytes", "emqx_bridge_kafka.consumer_config", [
+    {default, 100KB},
+    {datatype, bytesize}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.begin_offset", "emqx_bridge_kafka.consumer_config", [
+    {default, earliest},
+    {datatype, {enum, [earliest, earliest]}}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.offset_reset_policy", "emqx_bridge_kafka.consumer_config", [
+    {default, reset_by_subscriber},
+    {datatype, {enum, [reset_by_subscriber, reset_to_earliest, reset_to_latest]}}
+]}.
+
+{mapping, "bridge.kafka.consumer.config.size_stat_window", "emqx_bridge_kafka.consumer_config", [
+    {datatype, integer}
+]}.
+
+{translation, "emqx_bridge_kafka.consumer_config", fun(Conf) ->
+  Filter = fun(Opts) -> [{K, V} || {K, V} <- Opts, V =/= undefined] end,
+  Filter([{min_bytes,       cuttlefish:conf_get("bridge.kafka.consumer.config.min_bytes", Conf, undefined)},
+          {max_bytes,       cuttlefish:conf_get("bridge.kafka.consumer.config.max_bytes", Conf, undefined)},
+          {max_wait_time,       cuttlefish:conf_get("bridge.kafka.consumer.config.max_wait_time", Conf, undefined)},
+          {sleep_timeout, cuttlefish:conf_get("bridge.kafka.consumer.config.sleep_timeout", Conf, undefined)},
+          {prefetch_count, cuttlefish:conf_get("bridge.kafka.consumer.config.prefetch_count", Conf, undefined)},
+          {prefetch_bytes, cuttlefish:conf_get("bridge.kafka.consumer.config.prefetch_bytes", Conf, undefined)},
+          {begin_offset, cuttlefish:conf_get("bridge.kafka.consumer.config.begin_offset", Conf, undefined)},
+          {offset_reset_policy, cuttlefish:conf_get("bridge.kafka.consumer.config.offset_reset_policy", Conf, undefined)},
+          {size_stat_window, cuttlefish:conf_get("bridge.kafka.consumer.config.size_stat_window", Conf, undefined)}])
+end}.
+
+
+{mapping, "bridge.kafka.consumer.coordinator.partition_assignment_strategy", "emqx_bridge_kafka.coordinator", [
+    {default, roundrobin_v2},
+    {datatype, {enum, [roundrobin_v2, callback_implemented]}}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.session_timeout_seconds", "emqx_bridge_kafka.coordinator", [
+    {default, 10},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.heartbeat_rate_seconds", "emqx_bridge_kafka.coordinator", [
+    {default, 2},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.max_rejoin_attempts", "emqx_bridge_kafka.coordinator", [
+    {default, 5},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.rejoin_delay_seconds", "emqx_bridge_kafka.coordinator", [
+    {default, 1},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.offset_commit_policy", "emqx_bridge_kafka.coordinator", [
+    {default, commit_to_kafka_v2},
+    {datatype, {enum, [commit_to_kafka_v2, consumer_managed]}}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.offset_commit_interval_seconds", "emqx_bridge_kafka.coordinator", [
+    {default, 5},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.offset_retention_seconds", "emqx_bridge_kafka.coordinator", [
+    {default, -1},
+    {datatype, integer}
+]}.
+
+{mapping, "bridge.kafka.consumer.coordinator.protocol_name", "emqx_bridge_kafka.coordinator", [
+  {datatype, string}
+]}.
+
+{translation, "emqx_bridge_kafka.coordinator", fun(Conf) ->
+  Filter = fun(Opts) -> [{K, V} || {K, V} <- Opts, V =/= undefined] end,
+  Filter([{partition_assignment_strategy,       cuttlefish:conf_get("bridge.kafka.consumer.coordinator.partition_assignment_strategy", Conf, undefined)},
+          {session_timeout_seconds,       cuttlefish:conf_get("bridge.kafka.consumer.coordinator.session_timeout_seconds", Conf, undefined)},
+          {heartbeat_rate_seconds,       cuttlefish:conf_get("bridge.kafka.consumer.coordinator.heartbeat_rate_seconds", Conf, undefined)},
+          {max_rejoin_attempts, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.max_rejoin_attempts", Conf, undefined)},
+          {rejoin_delay_seconds, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.rejoin_delay_seconds", Conf, undefined)},
+          {offset_commit_policy, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.offset_commit_policy", Conf, undefined)},
+          {offset_commit_interval_seconds, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.offset_commit_interval_seconds", Conf, undefined)},
+          {offset_retention_seconds, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.offset_retention_seconds", Conf, undefined)},
+          {protocol_name, cuttlefish:conf_get("bridge.kafka.consumer.coordinator.protocol_name", Conf, undefined)}])
+end}.
+
+
+{mapping, "bridge.kafka.consumer.messages.device_cmd", "emqx_bridge_kafka.messages", [
+    {datatype, string}
+]}.
+
+{translation, "emqx_bridge_kafka.messages", fun(Conf) ->
+  Messages = cuttlefish_variable:filter_by_prefix("bridge.kafka.consumer.messages", Conf),
+  lists:map(fun({[_, _, _, _,Name], Val}) ->
+    {Name, list_to_binary(Val)}
+  end, Messages)
+end}.

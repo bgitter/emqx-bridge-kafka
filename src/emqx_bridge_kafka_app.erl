@@ -19,7 +19,7 @@
 start(_StartType, _StartArgs) ->
   ?LOG(info, "start..."),
   {ok, _AppNames} = application:ensure_all_started(wolff),
-  Servers = application:get_env(emqx_bridge_kafka, servers, "127.0.0.1:9092"),
+  Servers = application:get_env(emqx_bridge_kafka, servers, [{"localhost", 9092}]),
   ConnStrategy = application:get_env(emqx_bridge_kafka, connection_strategy, per_partition),
   RefreshInterval = application:get_env(emqx_bridge_kafka, min_metadata_refresh_interval, 5000),
   SockOpts = application:get_env(emqx_bridge_kafka, sock_opts, []),
@@ -34,6 +34,8 @@ start(_StartType, _StartArgs) ->
   {ok, Sup} = emqx_bridge_kafka_sup:start_link(),
   %% register metrics
   emqx_bridge_kafka:register_metrics(),
+
+  ok = emqx_bridge_kafka_consumer:load(ClientId),
 
   %% load kafka
   case emqx_bridge_kafka:load(ClientId) of
