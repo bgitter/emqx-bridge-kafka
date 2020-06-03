@@ -74,12 +74,12 @@ handle_message(Topic, Partition, #kafka_message_set{messages = Messages} = _Mess
 
 handle_call(mount_point, _From, #callback_state{mount_point = MountPoint} = State) ->
   ?LOG(info, "handle_call<<mount_point>>...~n MountPoint: ~p~n", [MountPoint]),
-  {reply, {ok, MountPoint}, State}.
+  {ok, {ok, MountPoint}, State}.
 
 %% 私有函数
 subscribe(ClientId, GroupId, Topic, ConsumerCfg, CoordinatorCfg, MountPoint) ->
   Topics = [Topic],
-  Config = [{consumer, maps:from_list(ConsumerCfg)}, {coordinator, maps:from_list(CoordinatorCfg)}],
+  Config = [{consumer, ConsumerCfg}, {coordinator, CoordinatorCfg}],
   wolff:start_link_group_subscriber(ClientId, GroupId, Topics,
     maps:from_list(Config), ?MESSAGE, ?MODULE, {ClientId, Topics, ?MESSAGE, MountPoint}).
 
@@ -87,7 +87,7 @@ spawn_message_handlers(_ClientId, []) -> [];
 spawn_message_handlers(ClientId, [Topic | Rest]) ->
   ?LOG(info, "spawn_message_handlers... ClientId:~p Topic:~p~n", [ClientId, Topic]),
   {ok, PartitionCount} = wolff:get_partitions_count(ClientId, Topic),
-  ?LOG(info, "PartitionCount: ~p~n", [PartitionCount]),
+  ?LOG(info, "PartitionCount:~p~n", [PartitionCount]),
   [{{Topic, Partition}, spawn_link(?MODULE, message_handler_loop, [Topic, Partition, self()])}
     || Partition <- lists:seq(0, PartitionCount - 1)] ++ spawn_message_handlers(ClientId, Rest).
 
@@ -117,7 +117,7 @@ message_handler_loop(Topic, Partition, SubscriberPid) ->
   end.
 
 mqtt_publish(SubscriberPid, Msg) ->
-  {ok, MountPoint0} = gen_server:call(SubscriberPid, mount_point),
+  {ok, MountPoint0} = gen_server:call(SubscriberPid, {call, mount_point}),
   MountPoint = case is_mount_point(MountPoint0) of
                  true -> MountPoint0;
                  {false, Key} -> get_value(emqx_json:decode(Msg), Key)
