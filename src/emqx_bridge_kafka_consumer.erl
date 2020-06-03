@@ -11,7 +11,6 @@
 
 -behaviour(wolff_group_subscriber).
 
--include("emqx_bridge_kafka.hrl").
 -include_lib("wolff/include/wolff.hrl").
 
 -logger_header("[bridge kafka consumer]").
