@@ -125,7 +125,8 @@ mqtt_publish(SubscriberPid, Msg) ->
                    ?LOG(info, "Key: ~p Json: ~p~n", [Key, Json]),
                    get_value(Key, Json)
                end,
-  Message = emqx_message:make(MountPoint, Msg),
+  Message0 = emqx_message:make(MountPoint, Msg),
+  Message = emqx_message:set_headers(#{}, Message0),
   ?LOG(info, "MountPoint:~p~n, Orig Msg:~p~n Message:~p~n", [MountPoint, Msg, Message]),
   Result = emqx:publish(Message),
   ?LOG(info, "mqtt_publish success...~n publish Result:~p~n", [Result]),
