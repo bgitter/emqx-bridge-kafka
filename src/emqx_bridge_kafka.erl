@@ -295,7 +295,7 @@ binary_header(Cnt, Binary) ->
 produce(Producers, Key, JsonMsg) when is_list(JsonMsg) ->
   produce(Producers, Key, iolist_to_binary(JsonMsg));
 produce(Producers, Key, JsonMsg) ->
-  ?LOG(info, "produce...~n Key:~p, JsonMsg:~p", [Key, JsonMsg]),
+  ?LOG(info, "produce...~n Key:~p~n JsonMsg:~p", [Key, JsonMsg]),
   case application:get_env(emqx_bridge_kafka, produce, sync) of
     sync ->
       ?LOG(info, "produce sync..."),
